@@ -53,9 +53,9 @@ public class Comment {
     }
 
     public void setValues(Comment comment) {
-        this.comment = comment.getComment();
-        this.postId = comment.getPostId();
-        this.userId = comment.getUserId();
+        if(comment.getComment() != null){
+            this.comment = comment.getComment();
+        }
     }
 
     @Override

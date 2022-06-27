@@ -64,9 +64,9 @@ public class CommentController {
     }
 
     @PutMapping("/{postId}/{commentId}")
-    public ResponseEntity<?> updateComment(@RequestBody CommentDto commentDto, @PathVariable Long postId, @PathVariable("commentId") Long commentId){
+    public ResponseEntity<?> updateComment(@RequestBody CommentDto commentDto, @PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId){
         Comment comment = commentMapper.CommentDtoToComment(commentDto);
-        Comment updateComment = commentService.updateComment(comment, commentId);
+        Comment updateComment = commentService.updateComment(comment, postId ,commentId);
 
         if(updateComment != null){
             CommentDto updatedCommentDto = commentMapper.CommentToCommentDto(updateComment);

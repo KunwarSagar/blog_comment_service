@@ -9,6 +9,6 @@ public interface CommentService {
     Comments getAllComments(Long postId);
     Comment getComment(Long postId, Long commentId);
     Comment addComment(Comment comment);
-    Comment updateComment(Comment comment, Long commentId);
+    Comment updateComment(Comment comment, Long postId, Long commentId);
     Boolean deleteComment(Long postId, Long commentId);
 }

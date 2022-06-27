@@ -63,9 +63,9 @@ public class CommentServiceImpl implements CommentService {
      * @return updated comment on success or else throw illegal state exception
      */
     @Override
-    public Comment updateComment(Comment comment, Long commentId) {
-        Comment existingComment = commentRepository.findByPostIdAndCommentId(comment.getPostId(),commentId)
-                .orElseThrow(()-> new IllegalStateException("Comment with comment id "+commentId+"  for post id "+comment.getPostId() +" not found."));
+    public Comment updateComment(Comment comment,Long postId, Long commentId) {
+        Comment existingComment = commentRepository.findByPostIdAndCommentId(postId, commentId)
+                .orElseThrow(()-> new IllegalStateException("Comment with comment id "+commentId+"  for post id "+postId +" not found."));
         existingComment.setValues(comment);
         return commentRepository.save(existingComment);
     }
