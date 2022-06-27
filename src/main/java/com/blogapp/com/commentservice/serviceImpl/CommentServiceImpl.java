@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -19,6 +20,11 @@ public class CommentServiceImpl implements CommentService {
         this.commentRepository = commentRepository;
     }
 
+    /**
+     * Get all comments of the specific post
+     * @param postId
+     * @return Comments
+     */
     @Override
     public Comments getAllComments(Long postId) {
         List<Comment> commentList = commentRepository.findAllByPostId(postId);
@@ -27,23 +33,57 @@ public class CommentServiceImpl implements CommentService {
         return comments;
     }
 
+    /**
+     * Get single comment of a post by comment id
+     * @param postId
+     * @param commentId
+     * @return Comment on success or else throw illegal state exception
+     */
     @Override
     public Comment getComment(Long postId, Long commentId) {
-        return null;
+        Comment comment = commentRepository.findByPostIdAndCommentId(postId,commentId)
+                .orElseThrow(()-> new IllegalStateException("Comment with comment id "+commentId+" for post id "+postId +" not found."));
+        return comment;
     }
 
+    /**
+     * Add comment
+     * @param comment
+     * @return added comment
+     */
     @Override
     public Comment addComment(Comment comment) {
-        return null;
+        return commentRepository.save(comment);
     }
 
+    /**
+     * Update comment by comment id
+     * @param comment
+     * @param commentId
+     * @return updated comment on success or else throw illegal state exception
+     */
     @Override
-    public Comment updateComment(Comment comment, Long postId) {
-        return null;
+    public Comment updateComment(Comment comment, Long commentId) {
+        Comment existingComment = commentRepository.findByPostIdAndCommentId(comment.getPostId(),commentId)
+                .orElseThrow(()-> new IllegalStateException("Comment with comment id "+commentId+"  for post id "+comment.getPostId() +" not found."));
+        existingComment.setValues(comment);
+        return commentRepository.save(existingComment);
     }
 
+    /**
+     * Delete comment by comment id
+     * @param postId
+     * @param commentId
+     * @return boolean
+     */
     @Override
-    public Boolean deleteComment(Long commentId) {
-        return null;
+    public Boolean deleteComment(Long postId, Long commentId) {
+        Optional<Comment> comment = commentRepository.findByPostIdAndCommentId(postId, commentId);
+        if(!comment.isPresent()){
+            return false;
+        }else {
+            commentRepository.delete(comment.get());
+            return true;
+        }
     }
 }

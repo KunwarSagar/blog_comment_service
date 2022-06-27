@@ -52,6 +52,12 @@ public class Comment {
         this.comment = comment;
     }
 
+    public void setValues(Comment comment) {
+        this.comment = comment.getComment();
+        this.postId = comment.getPostId();
+        this.userId = comment.getUserId();
+    }
+
     @Override
     public String toString() {
         return "Comment{" +

@@ -3,6 +3,7 @@ package com.blogapp.com.commentservice.controller;
 import com.blogapp.com.commentservice.dto.CommentDto;
 import com.blogapp.com.commentservice.dtoMapper.CommentMapper;
 import com.blogapp.com.commentservice.exceptions.CommentAddFailedException;
+import com.blogapp.com.commentservice.exceptions.CommentDeleteFailedException;
 import com.blogapp.com.commentservice.exceptions.CommentsNotFoundException;
 import com.blogapp.com.commentservice.model.Comment;
 import com.blogapp.com.commentservice.model.Comments;
@@ -45,19 +46,44 @@ public class CommentController {
         if(comment != null){
             return new ResponseEntity<>(comment, HttpStatus.OK);
         }else{
-            return new ResponseEntity<>(new CommentsNotFoundException("Comment with "+postId+" for post id "+postId +" not found."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new CommentsNotFoundException("Comment with comment id "+commentId+" for post id "+postId +" not found."), HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<?> addComment(@Valid @RequestBody CommentDto commentDto){
+    @PostMapping("/{postId}")
+    public ResponseEntity<?> addComment(@Valid @RequestBody CommentDto commentDto, @PathVariable Long postId){
         Comment comment = commentMapper.CommentDtoToComment(commentDto);
         Comment addedComment = commentService.addComment(comment);
 
         if(addedComment != null){
-            return new ResponseEntity<>(addedComment, HttpStatus.OK);
+            CommentDto addedCommentDto = commentMapper.CommentToCommentDto(addedComment);
+            return new ResponseEntity<>(addedCommentDto, HttpStatus.OK);
         }else{
             return new ResponseEntity<>(new CommentAddFailedException("comment add failed.").getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @PutMapping("/{postId}/{commentId}")
+    public ResponseEntity<?> updateComment(@RequestBody CommentDto commentDto, @PathVariable Long postId, @PathVariable("commentId") Long commentId){
+        Comment comment = commentMapper.CommentDtoToComment(commentDto);
+        Comment updateComment = commentService.updateComment(comment, commentId);
+
+        if(updateComment != null){
+            CommentDto updatedCommentDto = commentMapper.CommentToCommentDto(updateComment);
+
+            return new ResponseEntity<>(updatedCommentDto, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(new CommentAddFailedException("comment update failed.").getMessage(), HttpStatus.CONFLICT);
+        }
+    }
+
+    @DeleteMapping("{postId}/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long commentId, @PathVariable("postId") Long postId){
+        Boolean success = commentService.deleteComment(postId, commentId);
+        if(success){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else {
+            return new ResponseEntity<>(new CommentDeleteFailedException("Comment with id "+ commentId + " delete failed.").getMessage(), HttpStatus.CONFLICT);
         }
     }
 }
