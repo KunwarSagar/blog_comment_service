@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -20,7 +21,10 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comments getAllComments(Long postId) {
-        return null;
+        List<Comment> commentList = commentRepository.findAllByPostId(postId);
+        Comments comments = new Comments();
+        comments.setComments(commentList);
+        return comments;
     }
 
     @Override
@@ -34,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment updateComment(Comment comment) {
+    public Comment updateComment(Comment comment, Long postId) {
         return null;
     }
 
